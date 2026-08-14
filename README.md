@@ -24,8 +24,8 @@ A modern, responsive web application for reading and searching the King James Ve
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/bible-web-app.git
-cd bible-web-app
+git clone https://github.com/Nsoro-Allan/Bible-App.git
+cd Bible-App
 ```
 
 ### 2. Database Setup
