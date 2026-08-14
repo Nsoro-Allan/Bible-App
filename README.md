@@ -238,10 +238,6 @@ Contributions are welcome! Please follow these guidelines:
 
 Please ensure your code follows existing style conventions and include appropriate documentation.
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 The King James Version Bible text is in the public domain.
 
 ## Support
