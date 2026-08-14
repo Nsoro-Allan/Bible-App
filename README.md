@@ -244,11 +244,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 The King James Version Bible text is in the public domain.
 
-## Acknowledgments
-
-- Bible text: King James Version (Public Domain)
-- SVG icons: Custom designed for this application
-
 ## Support
 
 If you encounter any issues or have questions:
