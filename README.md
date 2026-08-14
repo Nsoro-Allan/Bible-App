@@ -217,15 +217,6 @@ $pass = 'your-password';
 - Check browser console for JavaScript errors
 - Ensure proper UTF-8 encoding in database
 
-### Theme Not Persisting
-
-**Issue:** Theme resets on page reload
-
-**Solutions:**
-- Check that browser allows localStorage
-- Verify browser is not in private/incognito mode
-- Clear browser cache and try again
-
 ## Contributing
 
 Contributions are welcome! Please follow these guidelines:
