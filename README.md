@@ -214,7 +214,4 @@ If you encounter any issues or have questions:
 3. Provide details about your environment and the problem
 ---
 
-**The King James Version Bible text is in the public domain.**
-
-
-**Developed for Bible study and reading**
+**Developed for Bible study and reading.**
