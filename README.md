@@ -205,20 +205,6 @@ $pass = 'your-password';
 - Check browser console for JavaScript errors
 - Ensure proper UTF-8 encoding in database
 
-## Contributing
-
-Contributions are welcome! Please follow these guidelines:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -m 'Add some feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
-
-Please ensure your code follows existing style conventions and include appropriate documentation.
-
-The King James Version Bible text is in the public domain.
-
 ## Support
 
 If you encounter any issues or have questions:
@@ -226,7 +212,9 @@ If you encounter any issues or have questions:
 1. Check the [Troubleshooting](#troubleshooting) section
 2. Open an issue on GitHub
 3. Provide details about your environment and the problem
-
 ---
+
+**The King James Version Bible text is in the public domain.**
+
 
 **Developed for Bible study and reading**
