@@ -1290,6 +1290,30 @@ body {
     border-bottom: 1px solid var(--border-color);
 }
 
+.folder-filter-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.folder-filter-wrapper .form-select {
+    flex: 1;
+}
+
+.btn-delete-folder {
+    background-color: rgba(220, 53, 69, 0.1);
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+.btn-delete-folder:hover {
+    background-color: rgba(220, 53, 69, 0.2);
+    border-color: #dc3545;
+}
+
+.btn-delete-folder svg {
+    color: #dc3545;
+}
+
 .bookmarks-panel-body {
     flex: 1;
     overflow-y: auto;

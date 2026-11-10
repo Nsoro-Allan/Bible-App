@@ -39,9 +39,24 @@ async function loadFolders() {
     if (data && data.folders) {
         BookmarkState.folders = data.folders;
         updateFolderSelects();
+        updateBookmarkCount(); // Update counts in real-time
         return data.folders;
     }
     return [];
+}
+
+async function deleteFolder(folderId) {
+    const data = await bookmarkAPI(`folders.php?action=remove&id=${folderId}`, {
+        method: 'DELETE'
+    });
+    
+    if (data) {
+        await loadFolders();
+        await loadBookmarks();
+        showNotification('Folder deleted successfully', 'success');
+        return true;
+    }
+    return false;
 }
 
 async function createFolder(name) {
@@ -86,6 +101,7 @@ async function addBookmark(bookmarkData) {
     });
     
     if (data) {
+        await loadFolders(); // Reload folders to update counts in real-time
         await loadBookmarks();
         showNotification('Bookmark saved successfully', 'success');
         return true;
@@ -99,6 +115,7 @@ async function deleteBookmark(bookmarkId) {
     });
     
     if (data) {
+        await loadFolders(); // Reload folders to update counts in real-time
         await loadBookmarks();
         showNotification('Bookmark removed successfully', 'success');
         return true;
@@ -156,7 +173,7 @@ function updateFolderSelects() {
     const bookmarkFolderSelect = document.getElementById('bookmarkFolder');
     const filterSelect = document.getElementById('bookmarkFolderFilter');
     
-    // Update bookmark modal folder select
+    // Update bookmark modal folder select with improved design
     if (bookmarkFolderSelect) {
         const currentValue = bookmarkFolderSelect.value;
         bookmarkFolderSelect.innerHTML = '';
@@ -164,10 +181,10 @@ function updateFolderSelects() {
         BookmarkState.folders.forEach(folder => {
             const option = document.createElement('option');
             option.value = folder.id;
-            option.textContent = folder.name;
-            if (folder.is_default == 1) {
-                option.textContent += ' (Default)';
-            }
+            const count = folder.bookmark_count || 0;
+            option.textContent = `${folder.name} (${count})`;
+            option.setAttribute('data-count', count);
+            option.setAttribute('data-is-default', folder.is_default);
             bookmarkFolderSelect.appendChild(option);
         });
         
@@ -182,7 +199,7 @@ function updateFolderSelects() {
         }
     }
     
-    // Update filter select
+    // Update filter select with real-time counts
     if (filterSelect) {
         const currentFilter = filterSelect.value;
         filterSelect.innerHTML = '<option value="">All Folders</option>';
@@ -190,7 +207,11 @@ function updateFolderSelects() {
         BookmarkState.folders.forEach(folder => {
             const option = document.createElement('option');
             option.value = folder.id;
-            option.textContent = `${folder.name} (${folder.bookmark_count || 0})`;
+            const count = folder.bookmark_count || 0;
+            option.textContent = `${folder.name} (${count})`;
+            option.setAttribute('data-count', count);
+            option.setAttribute('data-is-default', folder.is_default);
+            option.setAttribute('data-folder-id', folder.id);
             filterSelect.appendChild(option);
         });
         
@@ -419,6 +440,55 @@ async function confirmDeleteBookmark() {
     }
 }
 
+// Delete Folder Modal Functions
+let folderToDelete = null;
+
+function openDeleteFolderModal(folder) {
+    folderToDelete = folder;
+    
+    const modal = document.getElementById('deleteFolderModal');
+    const folderNameEl = document.getElementById('deleteFolderName');
+    const warningEl = document.getElementById('deleteFolderWarning');
+    const textEl = document.getElementById('deleteFolderText');
+    
+    folderNameEl.textContent = folder.name;
+    
+    const bookmarkCount = folder.bookmark_count || 0;
+    if (bookmarkCount > 0) {
+        textEl.textContent = 'Are you sure you want to delete this folder?';
+        warningEl.textContent = `${bookmarkCount} bookmark${bookmarkCount > 1 ? 's' : ''} will be moved to the Favorites folder.`;
+        warningEl.style.display = 'block';
+    } else {
+        textEl.textContent = 'Are you sure you want to delete this empty folder?';
+        warningEl.textContent = '';
+        warningEl.style.display = 'none';
+    }
+    
+    modal.style.display = 'flex';
+}
+
+function closeDeleteFolderModal() {
+    const modal = document.getElementById('deleteFolderModal');
+    modal.style.display = 'none';
+    folderToDelete = null;
+}
+
+async function confirmDeleteFolder() {
+    if (folderToDelete) {
+        const success = await deleteFolder(folderToDelete.id);
+        if (success) {
+            closeDeleteFolderModal();
+            // Reset filter to "All Folders"
+            const folderFilter = document.getElementById('bookmarkFolderFilter');
+            if (folderFilter) {
+                folderFilter.value = '';
+                updateBookmarksPanel();
+                updateDeleteFolderButton();
+            }
+        }
+    }
+}
+
 function showNewFolderInput() {
     const newFolderGroup = document.getElementById('newFolderGroup');
     const newFolderInput = document.getElementById('newFolderName');
@@ -498,6 +568,51 @@ async function removeCurrentBookmark() {
 // ============================================
 // Bookmarks Panel Functions
 // ============================================
+function updateDeleteFolderButton() {
+    const folderFilter = document.getElementById('bookmarkFolderFilter');
+    const deleteBtn = document.getElementById('btnDeleteFolder');
+    
+    if (!folderFilter || !deleteBtn) return;
+    
+    const selectedFolderId = folderFilter.value;
+    
+    if (!selectedFolderId) {
+        // No specific folder selected (All Folders)
+        deleteBtn.style.display = 'none';
+        return;
+    }
+    
+    // Check if selected folder is the default folder
+    const selectedFolder = BookmarkState.folders.find(f => f.id == selectedFolderId);
+    if (selectedFolder && selectedFolder.is_default == 1) {
+        // Cannot delete default folder
+        deleteBtn.style.display = 'none';
+    } else {
+        // Show delete button for non-default folders
+        deleteBtn.style.display = 'flex';
+    }
+}
+
+async function handleDeleteFolder() {
+    const folderFilter = document.getElementById('bookmarkFolderFilter');
+    if (!folderFilter) return;
+    
+    const selectedFolderId = folderFilter.value;
+    if (!selectedFolderId) return;
+    
+    const selectedFolder = BookmarkState.folders.find(f => f.id == selectedFolderId);
+    if (!selectedFolder) return;
+    
+    // Prevent deleting default folder
+    if (selectedFolder.is_default == 1) {
+        showNotification('Cannot delete the default Favorites folder', 'error');
+        return;
+    }
+    
+    // Open modal instead of confirm dialog
+    openDeleteFolderModal(selectedFolder);
+}
+
 function toggleBookmarksPanel() {
     const panel = document.getElementById('bookmarksPanel');
     const toggle = document.getElementById('bookmarkToggle');
@@ -520,6 +635,7 @@ function openBookmarksPanel() {
     toggle.classList.add('active');
     
     loadBookmarks();
+    updateDeleteFolderButton(); // Update delete button visibility
 }
 
 function closeBookmarksPanel() {
@@ -732,6 +848,17 @@ function initBookmarks() {
     if (deleteModalOverlay) deleteModalOverlay.addEventListener('click', closeDeleteConfirmModal);
     if (confirmDelete) confirmDelete.addEventListener('click', confirmDeleteBookmark);
     
+    // Delete folder modal close buttons
+    const closeDeleteFolderModalBtn = document.getElementById('closeDeleteFolderModal');
+    const cancelDeleteFolderBtn = document.getElementById('cancelDeleteFolder');
+    const deleteFolderModalOverlay = document.getElementById('deleteFolderModalOverlay');
+    const confirmDeleteFolderBtn = document.getElementById('confirmDeleteFolder');
+    
+    if (closeDeleteFolderModalBtn) closeDeleteFolderModalBtn.addEventListener('click', closeDeleteFolderModal);
+    if (cancelDeleteFolderBtn) cancelDeleteFolderBtn.addEventListener('click', closeDeleteFolderModal);
+    if (deleteFolderModalOverlay) deleteFolderModalOverlay.addEventListener('click', closeDeleteFolderModal);
+    if (confirmDeleteFolderBtn) confirmDeleteFolderBtn.addEventListener('click', confirmDeleteFolder);
+    
     // Save bookmark button
     const saveBtn = document.getElementById('saveBookmark');
     if (saveBtn) {
@@ -761,7 +888,14 @@ function initBookmarks() {
     if (folderFilter) {
         folderFilter.addEventListener('change', () => {
             updateBookmarksPanel();
+            updateDeleteFolderButton();
         });
+    }
+    
+    // Delete folder button
+    const deleteFolderBtn = document.getElementById('btnDeleteFolder');
+    if (deleteFolderBtn) {
+        deleteFolderBtn.addEventListener('click', handleDeleteFolder);
     }
     
     // Export button
@@ -805,6 +939,11 @@ function initBookmarks() {
             const deleteModal = document.getElementById('deleteConfirmModal');
             if (deleteModal && deleteModal.style.display === 'flex') {
                 closeDeleteConfirmModal();
+            }
+            
+            const deleteFolderModal = document.getElementById('deleteFolderModal');
+            if (deleteFolderModal && deleteFolderModal.style.display === 'flex') {
+                closeDeleteFolderModal();
             }
             
             const panel = document.getElementById('bookmarksPanel');

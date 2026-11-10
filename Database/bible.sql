@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 10, 2026 at 01:18 PM
+-- Generation Time: Nov 10, 2026 at 01:44 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -56,8 +56,7 @@ CREATE TABLE `bookmark_folders` (
 --
 
 INSERT INTO `bookmark_folders` (`id`, `name`, `is_default`, `created_at`) VALUES
-(1, 'Favorites', 1, '2026-11-10 12:14:57'),
-(2, 'demo', 0, '2026-11-10 12:15:22');
+(1, 'Favorites', 1, '2026-11-10 12:14:57');
 
 -- --------------------------------------------------------
 
@@ -31331,7 +31330,7 @@ ALTER TABLE `t_kjv`
 -- AUTO_INCREMENT for table `bookmarks`
 --
 ALTER TABLE `bookmarks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `bookmark_folders`
