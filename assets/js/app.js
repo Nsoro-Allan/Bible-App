@@ -588,6 +588,8 @@ function init() {
     console.log('Bible App Initialized');
 }
 
+document.getElementById("year").textContent = new Date().getFullYear();
+
 // Start the app when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
