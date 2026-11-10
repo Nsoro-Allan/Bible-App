@@ -21,54 +21,42 @@ A modern, responsive web application for reading and searching the King James Ve
 
 ## Installation
 
-### 1. Clone the Repository
+### 1. Start XAMPP
 
-```bash
-git clone https://github.com/Nsoro-Allan/Bible-App.git
-cd Bible-App
-```
-
-### 2. Database Setup
-
-Start your database server and import the Bible database:
-
-```bash
-# Access MySQL
-mysql -u root -p
-
-# Create and import database
-CREATE DATABASE bible_gen CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE bible_gen;
-SOURCE Database/bible.sql;
-exit;
-```
-
-### 3. Configure Database Connection
-
-Update the database configuration in `config/database.php`:
-
-```php
-$host = 'localhost';
-$db = 'bible_gen';
-$user = 'root';
-$pass = '';
-```
-
-### 4. Start the Application
-
-**Using XAMPP/LAMPP:**
 ```bash
 sudo /opt/lampp/lampp start
 ```
 
-Access the application at: `http://localhost/Bible/`
+### 2. Create Database in phpMyAdmin
 
-**Using PHP Built-in Server (Development):**
-```bash
-php -S localhost:8000
+1. Open your browser and go to: `http://localhost/phpmyadmin`
+2. Click on **"New"** in the left sidebar
+3. Enter database name: `bible`
+4. Select collation: `utf8mb4_unicode_ci`
+5. Click **"Create"**
+
+### 3. Import the Bible Database
+
+1. Click on the `bible` database you just created
+2. Click on the **"Import"** tab at the top
+3. Click **"Choose File"** and navigate to the `Database` folder in this project
+4. Select the `bible.sql` file
+5. Click **"Go"** at the bottom to import
+
+### 4. Configure Database Connection (if needed)
+
+The default configuration should work with XAMPP. If you need to change it, edit `config/database.php`:
+
+```php
+$host = 'localhost';
+$db = 'bible';
+$user = 'root';
+$pass = '';  // Leave empty for XAMPP default
 ```
 
-Access the application at: `http://localhost:8000`
+### 5. Access the Application
+
+Open your browser and go to: `http://localhost/Bible/`
 
 ## Usage
 
